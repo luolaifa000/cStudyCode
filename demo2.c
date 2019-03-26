@@ -21,7 +21,7 @@
 
 typedef struct {
     int socket;
-    char *data;
+    void *data;
     void *readHandle;
     void *writeHandle;
 } box;
@@ -35,8 +35,8 @@ int epfd,nfds;
 char buf[MAX_SIZE];
 void handerAccept(int listenfd);
 
-void readCallback(box *box);
-void writeCallback(int fd);
+void readCallback(box *readBox);
+void writeCallback(box *readBox);
 
 
 
@@ -48,7 +48,7 @@ int main(int argc,char *argv[])
     struct sockaddr_in cliaddr, servaddr;
     box boxData;
     bzero(&servaddr, sizeof(servaddr));
-    bzero(&buf, sizeof(MAX_SIZE));
+    bzero(&buf, MAX_SIZE);
     bzero(&boxData, sizeof(boxData));
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr = inet_addr(SERVER_IP);
@@ -80,23 +80,25 @@ int main(int argc,char *argv[])
                 handerAccept(listenfd);
             } else if(events[i].events == EPOLLOUT) {
 
+                box *writeBox = (box *)(events[i].data.ptr);
+                epollHandle func = (epollHandle) writeBox->writeHandle;
+                (*func)(writeBox);
+
             } else if(events[i].events == EPOLLIN){
-                box *aaa = (box *)(events[i].data.ptr);
-                epollHandle func = (epollHandle) aaa->readHandle;
-                func(aaa);
+                box *readBox = (box *)(events[i].data.ptr);
+                epollHandle func = (epollHandle) readBox->readHandle;
+                (*func)(readBox);
             } 
         }
     }
-
     return 0;
-    
 }
 
-void readCallback(box *box)
+void readCallback(box *readBox)
 {
-    int fd = box->socket;
+    int fd = readBox->socket;
     int nread;
-    bzero(&buf, sizeof(MAX_SIZE));
+    bzero(&buf, MAX_SIZE);
     nread = read(fd,buf,MAX_SIZE);
     if (nread == -1) {
         perror("read error\n");
@@ -107,22 +109,23 @@ void readCallback(box *box)
     }
 
     printf("readdata:%s\n", buf);
-    int ret;
-    ret = strncmp(buf, "i am client", 11);
-    if (ret == 0) {
-        printf("set\n");
-    }
 
     struct epoll_event ev;
+    box boxdata;
+
     ev.events = EPOLLOUT|EPOLLET;
     ev.data.fd = fd;
-    //ev.data.ptr = writeCallback;
+    boxdata.socket = fd;
+    boxdata.data = "iam box";
+    boxdata.writeHandle = writeCallback;
+    ev.data.ptr = &boxdata;
     epoll_ctl(epfd, EPOLL_CTL_MOD, fd, &ev);
 }
 
 
-void writeCallback(int fd)
+void writeCallback(box *readBox)
 {
+    int fd = readBox->socket;
     int nwrite;
     char tempBuf[100] = "i am server";
     nwrite = write(fd,tempBuf,strlen(tempBuf));
@@ -131,9 +134,13 @@ void writeCallback(int fd)
     }
     if (nwrite > 0) {
         struct epoll_event ev;
+        box boxdata;
         ev.events = EPOLLIN|EPOLLET;
         ev.data.fd = fd;
-        ev.data.ptr = readCallback;
+        boxdata.socket = fd;
+        boxdata.data = "iam box";
+        boxdata.readHandle = readCallback;
+        ev.data.ptr = &boxdata;
         epoll_ctl(epfd, EPOLL_CTL_MOD, fd, &ev);
     }
     
@@ -146,7 +153,7 @@ void handerAccept(int listenfd)
 {
     int clientFd;
     struct sockaddr_in clientAddr;
-    box boxdata;
+    
     socklen_t clientAddrLen;
     clientFd = accept(listenfd, (struct sockaddr*)&clientAddr, &clientAddrLen);
     if (clientFd == -1) {
@@ -155,6 +162,7 @@ void handerAccept(int listenfd)
     printf("accept a new client: %s:%d\n",inet_ntoa(clientAddr.sin_addr),clientAddr.sin_port);
 
     struct epoll_event ev;
+    box boxdata;
     ev.events = EPOLLIN|EPOLLET;
     ev.data.fd = clientFd;
     boxdata.socket = clientFd;

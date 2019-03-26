@@ -69,9 +69,14 @@ int main(int argc,char *argv[])
 
 void writeData(int fd)
 {
-    sleep(1);
+ 
     int nwrite;
-    char tempBuf[100] = "i am client";
+    char tempBuf[100];
+ 
+    printf("请输入指令:");
+    scanf("%s", tempBuf);
+
+
     nwrite = write(fd,tempBuf,strlen(tempBuf));
     if (nwrite == -1) {
         perror("write error\n");
