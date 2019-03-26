@@ -27,7 +27,24 @@ typedef struct {
 } box;
 
 
+typedef struct {
+    char *name;
+    int len;
+} command_s;
+
+//指令回调
+command_s command_arr[] = {
+    {"run", 3},
+    {"walk", 4},
+    {"", 0}
+};
+
+
+
 typedef void (*epollHandle)(box*);
+
+
+
 
 
 
@@ -37,6 +54,7 @@ void handerAccept(int listenfd);
 
 void readCallback(box *readBox);
 void writeCallback(box *readBox);
+void handlerCommand(char *name);
 
 
 
@@ -94,6 +112,19 @@ int main(int argc,char *argv[])
     return 0;
 }
 
+/*
+    指定回调处理
+*/
+void handlerCommand(char *name)
+{
+    command_s *p = command_arr;
+    
+    for ( ; p->len ; p++) {
+        printf("client:%s\n",name);
+        printf("%s\n", p->name);
+    }
+}
+
 void readCallback(box *readBox)
 {
     int fd = readBox->socket;
@@ -109,7 +140,8 @@ void readCallback(box *readBox)
     }
 
     printf("readdata:%s\n", buf);
-
+    
+    handlerCommand(buf);
     struct epoll_event ev;
     box boxdata;
 
