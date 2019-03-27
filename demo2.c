@@ -10,11 +10,7 @@
 #include <sys/types.h>
 #include <string.h>
 
-#define MAX_LISTEN_NUM 5
-#define MAX_EPOLL_NUM 20
-#define SERVER_IP "127.0.0.1"
-#define SERVER_PORT 8787
-#define MAX_SIZE 1000
+#include "common/common.h"
 
 
 
@@ -30,23 +26,11 @@ typedef struct {
 typedef struct {
     char *name;
     int len;
+    void *callback;
 } command_s;
-
-//指令回调
-command_s command_arr[] = {
-    {"run", 3},
-    {"walk", 4},
-    {"", 0}
-};
-
-
-
 typedef void (*epollHandle)(box*);
 
-
-
-
-
+typedef void (*commandHandlerPointer)(char*);
 
 int epfd,nfds;
 char buf[MAX_SIZE];
@@ -55,9 +39,16 @@ void handerAccept(int listenfd);
 void readCallback(box *readBox);
 void writeCallback(box *readBox);
 void handlerCommand(char *name);
+void runCommandHandler(char *name);
+void walkCommandHandler(char *name);
 
 
-
+//指令回调
+command_s command_arr[] = {
+    {"run", 3, runCommandHandler},
+    {"walk", 4, walkCommandHandler},
+    {"", 0, NULL}
+};
 
 
 
@@ -97,19 +88,27 @@ int main(int argc,char *argv[])
             if (socket == listenfd && events[i].events & EPOLLIN) {
                 handerAccept(listenfd);
             } else if(events[i].events == EPOLLOUT) {
-
                 box *writeBox = (box *)(events[i].data.ptr);
-                epollHandle func = (epollHandle) writeBox->writeHandle;
-                (*func)(writeBox);
+                (*((epollHandle) writeBox->writeHandle))(writeBox);
 
             } else if(events[i].events == EPOLLIN){
                 box *readBox = (box *)(events[i].data.ptr);
-                epollHandle func = (epollHandle) readBox->readHandle;
-                (*func)(readBox);
+                (*((epollHandle) readBox->readHandle))(readBox);
             } 
         }
     }
     return 0;
+}
+
+
+void runCommandHandler(char *name)
+{
+    printf("%s\n", name);
+}
+
+void walkCommandHandler(char *name)
+{
+    printf("%s\n", name);
 }
 
 /*
@@ -120,8 +119,9 @@ void handlerCommand(char *name)
     command_s *p = command_arr;
     
     for ( ; p->len ; p++) {
-        printf("client:%s\n",name);
-        printf("%s\n", p->name);
+        if (strcmp(name, p->name) == 0) {
+            (*(commandHandlerPointer)(p->callback))(p->name);
+        }
     }
 }
 
