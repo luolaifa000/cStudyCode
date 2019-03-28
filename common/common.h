@@ -9,6 +9,7 @@
 #include <string.h>
 #include <errno.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <string.h>
 
 #define MAX_LISTEN_NUM 5

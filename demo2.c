@@ -35,6 +35,7 @@ void writeCallback(box *readBox);
 void handlerCommand(char *name);
 void runCommandHandler(char *name);
 void walkCommandHandler(char *name);
+void mcLog(char *string);
 
 
 //指令回调
@@ -97,11 +98,13 @@ int main(int argc,char *argv[])
 
 void runCommandHandler(char *name)
 {
+    mcLog(name);
     printf("%s\n", name);
 }
 
 void walkCommandHandler(char *name)
 {
+    mcLog(name);
     printf("%s\n", name);
 }
 
@@ -124,7 +127,8 @@ void readCallback(box *readBox)
     int fd = readBox->socket;
     int nread;
     char *string = (char *) malloc(15);
-    nread = read(fd,string,strlen(string));
+    char ss[100];
+    nread = read(fd,ss,100);
     if (nread == -1) {
         perror("read error\n");
     }
@@ -133,9 +137,9 @@ void readCallback(box *readBox)
         close(fd);
     }
 
-    printf("readdata:%s\n", string);
+    printf("readdata:%s\n", ss);
     
-    handlerCommand(string);
+    handlerCommand(ss);
     struct epoll_event ev;
     box boxdata;
 
@@ -197,6 +201,23 @@ void handerAccept(int listenfd)
     epoll_ctl(epfd, EPOLL_CTL_ADD, clientFd, &ev);
 }
 
+
+
+void mcLog(char *string)
+{
+    int fd;
+    char *s = (char *) malloc(strlen(string) + 2);
+    char *ss = s;
+    while(*string) {
+        *s = *string;
+        s++;
+        string++;
+    }
+    *s = '\n';
+    fd = open("epoll.log",O_RDWR|O_CREAT|O_APPEND, "0777");
+    write(fd, ss, strlen(ss));
+    close(fd);
+}
 
 
 
