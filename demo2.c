@@ -1,18 +1,5 @@
-#include <stdio.h>
-#include <sys/socket.h>
-#include <sys/epoll.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <string.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <string.h>
-
 #include "common/common.h"
-
-
+#include "common/server.h"
 
 
 typedef struct {
@@ -33,9 +20,8 @@ typedef void (*epollHandle)(box*);
 typedef void (*commandHandlerPointer)(char*);
 
 int epfd,nfds;
-char buf[MAX_SIZE];
-void handerAccept(int listenfd);
 
+void handerAccept(int listenfd);
 void readCallback(box *readBox);
 void writeCallback(box *readBox);
 void handlerCommand(char *name);
@@ -54,10 +40,10 @@ command_s command_arr[] = {
 
 int main(int argc,char *argv[]) 
 {
+    test(2);
     struct sockaddr_in cliaddr, servaddr;
     box boxData;
     bzero(&servaddr, sizeof(servaddr));
-    bzero(&buf, MAX_SIZE);
     bzero(&boxData, sizeof(boxData));
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr = inet_addr(SERVER_IP);
@@ -129,8 +115,8 @@ void readCallback(box *readBox)
 {
     int fd = readBox->socket;
     int nread;
-    bzero(&buf, MAX_SIZE);
-    nread = read(fd,buf,MAX_SIZE);
+    char *string = NULL;
+    nread = read(fd,string,MAX_SIZE);
     if (nread == -1) {
         perror("read error\n");
     }
@@ -139,9 +125,9 @@ void readCallback(box *readBox)
         close(fd);
     }
 
-    printf("readdata:%s\n", buf);
+    printf("readdata:%s\n", string);
     
-    handlerCommand(buf);
+    handlerCommand(string);
     struct epoll_event ev;
     box boxdata;
 
@@ -159,7 +145,7 @@ void writeCallback(box *readBox)
 {
     int fd = readBox->socket;
     int nwrite;
-    char tempBuf[100] = "i am server";
+    char *tempBuf = "i am server";
     nwrite = write(fd,tempBuf,strlen(tempBuf));
     if (nwrite == -1) {
         perror("write error\n");
@@ -175,9 +161,7 @@ void writeCallback(box *readBox)
         ev.data.ptr = &boxdata;
         epoll_ctl(epfd, EPOLL_CTL_MOD, fd, &ev);
     }
-    
 }
-
 
 
 
@@ -203,5 +187,8 @@ void handerAccept(int listenfd)
     ev.data.ptr = &boxdata;
     epoll_ctl(epfd, EPOLL_CTL_ADD, clientFd, &ev);
 }
+
+
+
 
 
