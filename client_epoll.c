@@ -29,8 +29,8 @@ int main(int argc,char *argv[])
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     bzero(&servaddr, sizeof(servaddr));
     servaddr.sin_family = AF_INET;
-    servaddr.sin_port = htons(8787);
-    inet_pton(AF_INET,"127.0.0.1",&servaddr.sin_addr);
+    servaddr.sin_port = htons(SERVER_PORT);
+    inet_pton(AF_INET,SERVER_IP,&servaddr.sin_addr);
     int i = connect(sockfd, (struct sockaddr*)&servaddr,sizeof(servaddr));
     if (i != 0) {
         perror("connect error!\n");

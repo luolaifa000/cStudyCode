@@ -29,7 +29,7 @@ void runCommandHandler(char *name);
 void walkCommandHandler(char *name);
 
 
-//鎸囦护鍥炶皟
+//指令回调
 command_s command_arr[] = {
     {"run", 3, runCommandHandler},
     {"walk", 4, walkCommandHandler},
@@ -98,7 +98,7 @@ void walkCommandHandler(char *name)
 }
 
 /*
-    鎸囧畾鍥炶皟澶勭悊
+    指定回调处理
 */
 void handlerCommand(char *name)
 {
@@ -115,8 +115,8 @@ void readCallback(box *readBox)
 {
     int fd = readBox->socket;
     int nread;
-    char *string = NULL;
-    nread = read(fd,string,MAX_SIZE);
+    char *string = (char *) malloc(15);
+    nread = read(fd,string,strlen(string));
     if (nread == -1) {
         perror("read error\n");
     }
@@ -138,6 +138,7 @@ void readCallback(box *readBox)
     boxdata.writeHandle = writeCallback;
     ev.data.ptr = &boxdata;
     epoll_ctl(epfd, EPOLL_CTL_MOD, fd, &ev);
+    free(string);
 }
 
 
