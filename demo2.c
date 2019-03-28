@@ -1,5 +1,13 @@
+
+#ifndef COMMON_HEADER
+#define COMMON_HEADER 1
 #include "common/common.h"
+#endif
+
+#ifndef SERVER_HEADER
+#define SERVER_HEADER 1
 #include "common/server.h"
+#endif
 
 
 typedef struct {
@@ -29,7 +37,7 @@ void runCommandHandler(char *name);
 void walkCommandHandler(char *name);
 
 
-//指令回调
+//鎸囦护鍥炶皟
 command_s command_arr[] = {
     {"run", 3, runCommandHandler},
     {"walk", 4, walkCommandHandler},
@@ -98,7 +106,7 @@ void walkCommandHandler(char *name)
 }
 
 /*
-    指定回调处理
+    鎸囧畾鍥炶皟澶勭悊
 */
 void handlerCommand(char *name)
 {
