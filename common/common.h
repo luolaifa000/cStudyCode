@@ -10,7 +10,7 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <string.h>
+#include <time.h>
 
 #define MAX_LISTEN_NUM 5
 #define MAX_EPOLL_NUM 20

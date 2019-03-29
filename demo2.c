@@ -4,11 +4,7 @@
 #include "common/common.h"
 #endif
 
-#ifndef SERVER_HEADER
-#define SERVER_HEADER 1
-#include "common/server.h"
-#endif
-
+#define CHILD_MODE 0
 
 typedef struct {
     int socket;
@@ -22,6 +18,7 @@ typedef struct {
     char *name;
     int len;
     void *callback;
+    void *value;
 } command_s;
 typedef void (*epollHandle)(box*);
 
@@ -35,13 +32,14 @@ void writeCallback(box *readBox);
 void handlerCommand(char *name);
 void runCommandHandler(char *name);
 void walkCommandHandler(char *name);
-void mcLog(char *string);
 
 
 //指令回调
 command_s command_arr[] = {
-    {"run", 3, runCommandHandler},
-    {"walk", 4, walkCommandHandler},
+    {"run", 3, runCommandHandler,NULL},
+    {"walk", 4, walkCommandHandler,NULL},
+    {"set", 3, runCommandHandler,NULL},
+    {"get", 3, walkCommandHandler,NULL},
     {"", 0, NULL}
 };
 
@@ -49,7 +47,20 @@ command_s command_arr[] = {
 
 int main(int argc,char *argv[]) 
 {
-    test(2);
+    
+    int pid = fork();
+    if (pid < 0) {
+        printf("fork:%s\n", strerror(errno));
+        return 1;
+    }
+
+    if (pid > 0 && CHILD_MODE == 1) {
+        return 0;
+    }
+    if (pid == 0 && CHILD_MODE == 0) {
+        return 0;
+    }
+
     struct sockaddr_in cliaddr, servaddr;
     box boxData;
     bzero(&servaddr, sizeof(servaddr));
@@ -60,7 +71,7 @@ int main(int argc,char *argv[])
     int listenfd;
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
     if (bind(listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr))) {
-        perror("bind error!");
+        printf("bind:%s\n",strerror(errno));
         return 1;
     }
     listen(listenfd, MAX_LISTEN_NUM);
@@ -98,13 +109,11 @@ int main(int argc,char *argv[])
 
 void runCommandHandler(char *name)
 {
-    mcLog(name);
     printf("%s\n", name);
 }
 
 void walkCommandHandler(char *name)
 {
-    mcLog(name);
     printf("%s\n", name);
 }
 
@@ -113,6 +122,7 @@ void walkCommandHandler(char *name)
 */
 void handlerCommand(char *name)
 {
+    mcLog("demo.log",name);
     command_s *p = command_arr;
     
     for ( ; p->len ; p++) {
@@ -126,9 +136,10 @@ void readCallback(box *readBox)
 {
     int fd = readBox->socket;
     int nread;
-    char *string = (char *) malloc(15);
-    char ss[100];
-    nread = read(fd,ss,100);
+    
+    char *string = (char *)malloc(100);
+    
+    nread = read(fd,string, 100);
     if (nread == -1) {
         perror("read error\n");
     }
@@ -137,9 +148,9 @@ void readCallback(box *readBox)
         close(fd);
     }
 
-    printf("readdata:%s\n", ss);
+    printf("readdata:%s\n", string);
     
-    handlerCommand(ss);
+    handlerCommand(string);
     struct epoll_event ev;
     box boxdata;
 
@@ -203,21 +214,6 @@ void handerAccept(int listenfd)
 
 
 
-void mcLog(char *string)
-{
-    int fd;
-    char *s = (char *) malloc(strlen(string) + 2);
-    char *ss = s;
-    while(*string) {
-        *s = *string;
-        s++;
-        string++;
-    }
-    *s = '\n';
-    fd = open("epoll.log",O_RDWR|O_CREAT|O_APPEND, "0777");
-    write(fd, ss, strlen(ss));
-    close(fd);
-}
 
 
 
