@@ -1,38 +1,20 @@
-Fri Mar 29 10:46:16 2019 [info] run
-Fri Mar 29 10:46:17 2019 [info] dkfjgkdfjg
-Fri Mar 29 10:46:18 2019 [info] sadlkfjgkdsajg
-Fri Mar 29 10:50:20 2019 [info] 
-Fri Mar 29 11:01:30 2019 [info] sfd
-Fri Mar 29 11:01:30 2019 [info] sdg
-Fri Mar 29 11:01:31 2019 [info] sdf
-Fri Mar 29 11:01:31 2019 [info] fdg
-Fri Mar 29 11:01:32 2019 [info] 234
-Fri Mar 29 11:15:48 2019 [info] like
-Fri Mar 29 11:15:51 2019 [info] like
-Fri Mar 29 11:16:00 2019 [info] hejiu
-Fri Mar 29 11:16:02 2019 [info] lashi
-Fri Mar 29 11:16:06 2019 [info] wangq
-Fri Mar 29 11:16:09 2019 [info] wocaonimeiiee
-Fri Mar 29 11:18:23 2019 [info] 
-Fri Mar 29 11:27:20 2019 [info] sdf
-Fri Mar 29 11:27:21 2019 [info] sdg
-Fri Mar 29 11:27:21 2019 [info] dfg
-Fri Mar 29 11:27:21 2019 [info] ert
-Fri Mar 29 11:27:24 2019 [info] dfjer
-Fri Mar 29 11:27:27 2019 [info] runstart
-Fri Mar 29 11:27:31 2019 [info] kfdf
-Fri Mar 29 11:32:19 2019 [info] 
-Fri Mar 29 11:32:27 2019 [info] sdfdsf
-Fri Mar 29 11:32:28 2019 [info] sdgfdsg
-Fri Mar 29 11:32:28 2019 [info] dfgd4
-Fri Mar 29 11:32:29 2019 [info] ertertert
-Fri Mar 29 11:32:39 2019 [info] df524df
-Fri Mar 29 11:32:40 2019 [info] sdfs5df34
-Fri Mar 29 11:32:54 2019 [info] 
-Fri Mar 29 11:37:29 2019 [info] sdf
-Fri Mar 29 11:37:30 2019 [info] sdf
-Fri Mar 29 11:37:30 2019 [info] sdf
-Fri Mar 29 11:37:30 2019 [info] sdgf
-Fri Mar 29 11:37:31 2019 [info] sdgf
-Fri Mar 29 11:37:31 2019 [info] gf
-Fri Mar 29 11:37:57 2019 [info] 
+root      20955      1  0 13:16 ?        00:00:00 nginx: master process /usr/sbin/nginx -c /etc/nginx/nginx.conf
+nginx     20956  20955  0 13:16 ?        00:00:00 nginx: worker process
+root      30272  30270  0 15:03 ?        00:00:00 sh -c echo | ps -ef|grep nginx >> /mnt/windows/cStudyCode/demo.log
+root      30275  30272  0 15:03 ?        00:00:00 sh -c echo | ps -ef|grep nginx >> /mnt/windows/cStudyCode/demo.log
+root      20955      1  0 13:16 ?        00:00:00 nginx: master process /usr/sbin/nginx -c /etc/nginx/nginx.conf
+nginx     20956  20955  0 13:16 ?        00:00:00 nginx: worker process
+root      30277  30270  0 15:03 ?        00:00:00 sh -c echo | ps -ef|grep nginx >> /mnt/windows/cStudyCode/demo.log
+root      30280  30277  0 15:03 ?        00:00:00 sh -c echo | ps -ef|grep nginx >> /mnt/windows/cStudyCode/demo.log
+root      20955      1  0 13:16 ?        00:00:00 nginx: master process /usr/sbin/nginx -c /etc/nginx/nginx.conf
+nginx     20956  20955  0 13:16 ?        00:00:00 nginx: worker process
+root      30282  30270  0 15:03 ?        00:00:00 sh -c echo | ps -ef|grep nginx >> /mnt/windows/cStudyCode/demo.log
+root      30285  30282  0 15:03 ?        00:00:00 sh -c echo | ps -ef|grep nginx >> /mnt/windows/cStudyCode/demo.log
+root      20955      1  0 13:16 ?        00:00:00 nginx: master process /usr/sbin/nginx -c /etc/nginx/nginx.conf
+nginx     20956  20955  0 13:16 ?        00:00:00 nginx: worker process
+root      30286  30270  0 15:03 ?        00:00:00 sh -c echo | ps -ef|grep nginx >> /mnt/windows/cStudyCode/demo.log
+root      30289  30286  0 15:03 ?        00:00:00 sh -c echo | ps -ef|grep nginx >> /mnt/windows/cStudyCode/demo.log
+root      20955      1  0 13:16 ?        00:00:00 nginx: master process /usr/sbin/nginx -c /etc/nginx/nginx.conf
+nginx     20956  20955  0 13:16 ?        00:00:00 nginx: worker process
+root      30291  30270  0 15:03 ?        00:00:00 sh -c echo | ps -ef|grep nginx >> /mnt/windows/cStudyCode/demo.log
+root      30294  30291  0 15:03 ?        00:00:00 sh -c echo | ps -ef|grep nginx >> /mnt/windows/cStudyCode/demo.log
