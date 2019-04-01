@@ -9,12 +9,12 @@ typedef struct {
     char *key;
     void *next;
     void *pre;
-} node;
+} hashNode;
 
 typedef struct {
     int size;
     void *func;
-    node **bucket;
+    hashNode **bucket;
     int countNode;
 
 } hashTable;
@@ -24,11 +24,11 @@ typedef int (*hashHandler)(char *key, int size);
 
 int hashFunction(char *key, int size);
 
-int hashTableInsert(hashTable *hash, node *node);
+int hashTableInsert(hashTable *hash, hashNode *node);
 
 void *defMalloc(int size);
 
-node* createNode(const char *string);
+hashNode* createNode(const char *string);
 
 void printfHashTable(hashTable *hash);
 
@@ -39,7 +39,7 @@ int main()
     hash->size = 16;
     hash->countNode = 0;
     hash->func = hashFunction;
-    hash->bucket = (node **) defMalloc(sizeof(node *) * hash->size);
+    hash->bucket = (hashNode **) defMalloc(sizeof(hashNode *) * hash->size);
     
 
     //插入数据
@@ -47,7 +47,7 @@ int main()
     int i = 0;
     for (i; i<5 ; ++i)
     {
-        node *temp = createNode(arr[i]);
+        hashNode *temp = createNode(arr[i]);
         hashTableInsert(hash, temp);
     }
 
@@ -63,24 +63,47 @@ int main()
 void printfHashTable(hashTable *hash)
 {
     int k = 0;
+    hashNode *p;
+    printf("begin print hashTable:%d\n",hash->countNode);
     while(k++ < hash->size){
         /* code */
-        if (hash->bucket[k])
+        if (hash->bucket[k]) {
             printf("index:%d,key:%s\n",hash->bucket[k]->index,hash->bucket[k]->key);
+            p = hash->bucket[k];
+            while(p->next) {
+                printf("index:%d,key:%s\n",((hashNode *)(p->next))->index,((hashNode *)(p->next))->key);
+                p = (hashNode *) p->next;
+            }
+        }
+            
     }
 }
 
 
-int hashTableInsert(hashTable *hash, node *node)
+int hashTableInsert(hashTable *hash, hashNode *node)
 {
     printf("key:%s\n", node->key);
     int index = (*((hashHandler) hash->func))(node->key, hash->size);
     node->index = index;
     printf("index:%d\n", index);
-    if (hash->bucket[index]) {
+    hashNode *p = hash->bucket[index];
+    if (p) {
         //地址冲突，找到链表尾节点在后面插入
+        while(p) {
+            if (strcmp(node->key, p->key) == 0) {
+                return 1;
+            }
+            if (strcmp(node->key, p->key) < 0) {
+                node->next = p;
+
+                
+            }
+            p = (hashNode *) p->next;
+        }
+        p = node;
+
     } else {
-        hash->bucket[index] = node;
+        p = node;
     }
 
     hash->countNode++;
@@ -107,10 +130,10 @@ void *defMalloc(int size)
 }
 
 
-node* createNode(const char *string)
+hashNode* createNode(const char *string)
 {
-    node *temp;
-    temp = (node *) defMalloc(sizeof(node));
+    hashNode *temp;
+    temp = (hashNode *) defMalloc(sizeof(hashNode));
 
     temp->key = (char *)string;
     temp->index = 0;
