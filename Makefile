@@ -1,8 +1,8 @@
-demo2 : demo2.o server.o log.o
-	gcc -o demo2 demo2.o server.o log.o
+main : main.o server.o log.o hashTable.o
+	gcc -o main main.o server.o log.o hashTable.o
 
-demo2.o : demo2.c
-	gcc -c demo2.c
+main.o : main.c 
+	gcc -c main.c
 
 server.o : ./common/server.c
 	gcc -c ./common/server.c
@@ -10,5 +10,8 @@ server.o : ./common/server.c
 log.o : ./log/log.c
 	gcc -c ./log/log.c
 
+hashTable.o : ./hashTable/hashTable.c
+	gcc -c ./hashTable/hashTable.c
+
 clean : 
-	rm demo2
+	rm main

@@ -38,34 +38,6 @@ hashNode* createNode(const char *string, const char *value);
 
 void printfHashTable(hashTable *hash);
 
-int main()
-{
-    hashTable *hash;
-    hash = hashInit(16);
-    
-
-    //插入数据
-    char arr[][10] = {{"java"},{"php"},{"c"},{"python"},{"go"},{"20"}};
-    int i = 0;
-    for (i; i<6 ; ++i)
-    {
-        hashNode *temp = createNode(arr[i], arr[i]);
-        hashTableInsert(hash, temp);
-    }
-
-    //遍历数据打印一下
-    printfHashTable(hash);
-
-    char *find = hashTableFind(hash, "dd");
-    printf("find:%s\n", find);
-
-
-    hashTableDelete(hash, "java");
-    printfHashTable(hash);
-    free(hash->bucket);
-    free(hash);
-    return 0;
-}
 
 
 hashTable* hashInit(int size)

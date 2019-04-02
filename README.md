@@ -4,9 +4,9 @@ cStudyCode
 ```gcc
 ##epoll
 
-gcc demo2.c ./common/server.c -o demo2
+gcc main.c ./common/server.c -o main
 
-gcc demo2.c ./common/server.c ./log/log.c -o demo2
+gcc main.c ./common/server.c ./log/log.c -o main
 
 ##守护进程
 gcc shell.c ./deamon/deamon.c -o shell

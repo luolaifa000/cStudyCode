@@ -48,6 +48,25 @@ command_s command_arr[] = {
 int main(int argc,char *argv[]) 
 {
     
+    /*hashTable *hash;
+    hash = hashInit(16);
+    
+
+    //插入数据
+    char arr[][10] = {{"java"},{"php"},{"c"},{"python"},{"go"},{"20"}};
+    int i = 0;
+    for (i; i<6 ; ++i)
+    {
+        hashNode *temp = createNode(arr[i], arr[i]);
+        hashTableInsert(hash, temp);
+    }
+
+    //遍历数据打印一下
+    printfHashTable(hash);*/
+
+
+
+
     int pid = fork();
     if (pid < 0) {
         printf("fork:%s\n", strerror(errno));
