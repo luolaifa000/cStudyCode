@@ -24,4 +24,6 @@ gcc hashTable.c -o hash
 
 
 #makefile
-`使用makefile编译工程`
+`
+使用makefile编译工程
+`

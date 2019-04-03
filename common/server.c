@@ -116,25 +116,41 @@ void handlerCommand(char *name)
     command_s *p = command_arr;
 
     int i = 0;
-    char **argv = defMalloc(sizeof(void *) * 3);
-    
-    char *sss= defMalloc(sizeof(void *) * 1);
-    while (*name) {
-        if (*name != ' ') {
-            *argv[i] = *name++;
-        } else {
-             i++;
-        }
+    char **argv = defMalloc(sizeof(char *) * 3);
+    for (i = 0; i<3;i++) {
+        argv[i] = defMalloc(30);
     }
-
-    printf("i:%d\n",i);
-
+    i = 0;
+    char *sss;
+    int start = 0;
+    while (*name) {
+        if (start == 0) {
+            sss = argv[i];
+        }
+        switch (*name)
+        {
+            case ' ':
+                start = 0;
+                i++;
+                break;
+            default:
+                start = 1;
+                *sss++ = *name;
+                break;
+        }
+        name++;
+    }
+    for (i = 0; i<3;i++) {
+        printf("i:%d,sss:%s\n",i,argv[i]);
+    }
     
-    for ( ; p->len ; p++) {
+    
+    
+    /*for ( ; p->len ; p++) {
         if (strcmp(name, p->name) == 0) {
             (*(commandHandlerPointer)(p->callback))(p->name);
         }
-    }
+    }*/
 }
 /**
  * 读事件回调
