@@ -4,10 +4,10 @@ main : $(OBJS)
 	gcc -o main $(OBJS)
 
 main.o : main.c 
-	gcc -c main.c ./hashTable/hashTable.h 
+	gcc -c main.c ./hashTable/hashTable.h ./common/common.h ./common/server.h
 
 server.o : ./common/server.c
-	gcc -c ./common/server.c 
+	gcc -c ./common/server.c ./common/common.h ./common/server.h
 
 
 hashTable.o : ./hashTable/hashTable.c
