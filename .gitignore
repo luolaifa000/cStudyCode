@@ -1,2 +1,5 @@
 .vscode
 *.sql
+*.o
+main
+client_epoll
