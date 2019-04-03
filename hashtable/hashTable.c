@@ -2,46 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-
-typedef struct {
-    int index;
-    char *key;
-    void *next;
-    void *pre;
-    char *value;
-} hashNode;
-
-typedef struct {
-    int size;
-    void *func;
-    hashNode **bucket;
-    int countNode;
-
-} hashTable;
-
-hashTable* hashInit(int size);
-
-typedef int (*hashHandler)(char *key, int size);
-
-int hashFunction(char *key, int size);
-
-int hashTableInsert(hashTable *hash, hashNode *node);
-
-char* hashTableFind(hashTable *hash, char *key);
-
-int hashTableDelete(hashTable *hash, char *key);
-
-void *defMalloc(int size);
-
-hashNode* createNode(const char *string, const char *value);
-
-void printfHashTable(hashTable *hash);
-
+#ifndef HASH_HEADER
+#define HASH_HEADER 1
+#include "hashTable.h"
+#endif
 
 
 hashTable* hashInit(int size)
 {
+    mcLog("hash.sql","sdfsdf");
     hashTable *hash;
     hash = (hashTable *) defMalloc(sizeof(hashTable));
     hash->size = size;

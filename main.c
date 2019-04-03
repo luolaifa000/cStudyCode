@@ -4,6 +4,11 @@
 #include "common/common.h"
 #endif
 
+#ifndef HASH_HEADER
+#define HASH_HEADER 1
+#include "hashTable/hashTable.h"
+#endif
+
 #define CHILD_MODE 0
 
 typedef struct {
@@ -48,21 +53,21 @@ command_s command_arr[] = {
 int main(int argc,char *argv[]) 
 {
     
-    /*hashTable *hash;
-    hash = hashInit(16);
+    hashTable *hash;
+    hash = (hashTable *) hashInit(16);
     
 
     //插入数据
     char arr[][10] = {{"java"},{"php"},{"c"},{"python"},{"go"},{"20"}};
-    int i = 0;
-    for (i; i<6 ; ++i)
+    int v = 0;
+    for (v; v<6 ; ++v)
     {
-        hashNode *temp = createNode(arr[i], arr[i]);
+        hashNode *temp = (hashNode *)createNode(arr[v], arr[v]);
         hashTableInsert(hash, temp);
     }
 
     //遍历数据打印一下
-    printfHashTable(hash);*/
+    printfHashTable(hash);
 
 
 
