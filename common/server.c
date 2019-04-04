@@ -148,21 +148,24 @@ char* handlerCommand(char *name)
         argv[i] = defMalloc(30);
     }
     i = 0;
-    char *sss;
+    char *last;
     int start = 0;
     while (*name) {
         if (start == 0) {
-            sss = argv[i];
+            last = argv[i];
         }
         switch (*name)
         {
             case ' ':
                 start = 0;
                 i++;
+                if (i > 2) {
+                    return "format error!";
+                }
                 break;
             default:
                 start = 1;
-                *sss++ = *name;
+                *last++ = *name;
                 break;
         }
         name++;
@@ -179,7 +182,7 @@ char* handlerCommand(char *name)
         }
         
     }
-    printf("command not reconize\n");
+    printf("undefined command!\n");
     return NULL;
 }
 /**
@@ -214,7 +217,7 @@ void readCallback(messageBox *box)
     printfHashTable(hash);
     epollEventDdl(EPOLL_CTL_MOD, fd, EPOLLOUT|EPOLLET, readCallback, writeCallback, response);
 
-    free(string);
+    defFree(string);
 }
 
 /**

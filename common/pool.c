@@ -11,3 +11,9 @@ void *defMalloc(int size)
     memset(temp,0,size);
     return temp;
 }
+
+
+void *defFree(void *p)
+{
+    free(p);
+}
