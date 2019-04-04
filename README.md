@@ -23,7 +23,7 @@ gcc hashTable.c -o hash
 ```
 
 
-#makefile
-`
+MakeFile
+```
 使用makefile编译工程
-`
+```
