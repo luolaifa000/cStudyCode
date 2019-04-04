@@ -7,6 +7,8 @@
 #include "hashTable.h"
 #endif
 
+#include "../common/pool.h"
+
 
 hashTable* hashInit(int size)
 {
@@ -25,7 +27,7 @@ void printfHashTable(hashTable *hash)
     int k = 0;
     hashNode *p;
     printf("begin print hashTable:%d\n",hash->countNode);
-    while(k++ < hash->size){
+    while(k < hash->size){
         /* code */
         if (hash->bucket[k]) {
             printf("index:%d,key:%s,value:%s\n",hash->bucket[k]->index,hash->bucket[k]->key,hash->bucket[k]->value);
@@ -35,7 +37,7 @@ void printfHashTable(hashTable *hash)
                 p = (hashNode *) p->next;
             }
         }
-            
+        k++;
     }
 }
 
@@ -135,12 +137,6 @@ int hashFunction(char *key, int size)
     return temp % size;
 }
 
-void *defMalloc(int size)
-{
-    void *temp = malloc(size);
-    memset(temp,0,size);
-    return temp;
-}
 
 
 hashNode* createNode(const char *string, const char *value)

@@ -1,9 +1,10 @@
 #include "common.h"
 #include "server.h"
 #include "../hashTable/hashTable.h"
+#include "pool.h"
+
 
 extern hashTable *hash;
-
 
 //指令回调
 command_s command_arr[] = {
@@ -94,7 +95,6 @@ char* setCommandHandler(char *name, char *value)
     } else {
         return NULL;
     }
-    
 }
 
 /**
@@ -206,7 +206,11 @@ void readCallback(messageBox *box)
     
     char *response = handlerCommand(string);
 
-    printf("response:%s\n", response);
+    if (!response) {
+        response = "null";
+    }
+
+    printf("response:%p\n", response);
     printfHashTable(hash);
     epollEventDdl(EPOLL_CTL_MOD, fd, EPOLLOUT|EPOLLET, readCallback, writeCallback, response);
 

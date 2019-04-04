@@ -32,8 +32,6 @@ char* hashTableFind(hashTable *hash, char *key);
 
 int hashTableDelete(hashTable *hash, char *key);
 
-void *defMalloc(int size);
-
 hashNode* createNode(const char *string, const char *value);
 
 void printfHashTable(hashTable *hash);
