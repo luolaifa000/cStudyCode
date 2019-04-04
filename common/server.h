@@ -18,7 +18,6 @@ typedef void (*epollHandle)(messageBox*);
 
 typedef char* (*commandHandlerPointer)(char*, char*);
 
-//typedef void (*setCommandHandlerPointer)(char *name, char *value);
 
 int epfd,nfds;
 

@@ -1,6 +1,6 @@
-#include "common/common.h"
-#include "common/server.h"
-#include "hashTable/hashTable.h"
+#include "../common/common.h"
+#include "../common/server.h"
+#include "../hashTable/hashTable.h"
 
 hashTable *hash;
 
