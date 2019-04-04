@@ -42,10 +42,10 @@ void printfHashTable(hashTable *hash)
 
 int hashTableInsert(hashTable *hash, hashNode *node)
 {
-    printf("key:%s\n", node->key);
+    //printf("key:%s\n", node->key);
     int index = (*((hashHandler) hash->func))(node->key, hash->size);
     node->index = index;
-    printf("index:%d\n", index);
+    //printf("index:%d\n", index);
     hashNode *p = hash->bucket[index];
     hashNode *p_pre;
     if (p) {

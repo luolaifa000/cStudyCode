@@ -70,7 +70,7 @@ void writeData(int fd)
     char tempBuf[100];
  
     printf("请输入指令:");
-    scanf("%s", tempBuf);
+    fgets(tempBuf, sizeof(tempBuf), stdin);
 
 
     nwrite = write(fd,tempBuf,strlen(tempBuf));

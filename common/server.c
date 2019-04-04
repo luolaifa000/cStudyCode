@@ -2,6 +2,8 @@
 #include "server.h"
 #include "../hashTable/hashTable.h"
 
+extern hashTable *hash;
+
 
 //指令回调
 command_s command_arr[] = {
@@ -68,11 +70,55 @@ void epollEventLoop(int listenfd)
 }
 
 
+char* filterHuanHang(char *value)
+{
+    if(value[strlen(value)-1] == '\n') {
+        value[strlen(value)-1] = '\0';
+    }
+    return value;
+}
+
+
 /**
  * run命令回调
  * 
 */
-void setCommandHandler(char *name)
+char* setCommandHandler(char *name, char *value)
+{
+    hashNode *node = createNode(name, value);
+    int flag = hashTableInsert(hash, node);
+    printfHashTable(hash);
+
+    if (flag == 0) {
+        return "OK";
+    } else {
+        return NULL;
+    }
+    
+}
+
+/**
+ * walk命令回调
+ * 
+*/
+char* getCommandHandler(char *name, char *value)
+{
+
+    char *val = hashTableFind(hash, name);
+
+    if (val) {
+        return val;
+    } else {
+        return NULL;
+    }
+}
+
+
+/**
+ * run命令回调
+ * 
+*/
+char* runCommandHandler(char *name, char *value)
 {
     printf("%s\n", name);
 }
@@ -81,26 +127,7 @@ void setCommandHandler(char *name)
  * walk命令回调
  * 
 */
-void getCommandHandler(char *name)
-{
-    printf("%s\n", name);
-}
-
-
-/**
- * run命令回调
- * 
-*/
-void runCommandHandler(char *name)
-{
-    printf("%s\n", name);
-}
-
-/**
- * walk命令回调
- * 
-*/
-void walkCommandHandler(char *name)
+char* walkCommandHandler(char *name, char *value)
 {
     printf("%s\n", name);
 }
@@ -109,9 +136,9 @@ void walkCommandHandler(char *name)
  * 指定回调处理
  * 
 */
-void handlerCommand(char *name)
+char* handlerCommand(char *name)
 {
-    printf("name:%s\n",name);
+    //printf("name:%s\n",name);
     mcLog("demo.log",name);
     command_s *p = command_arr;
 
@@ -140,17 +167,20 @@ void handlerCommand(char *name)
         }
         name++;
     }
-    for (i = 0; i<3;i++) {
-        printf("i:%d,sss:%s\n",i,argv[i]);
-    }
-    
-    
-    
-    /*for ( ; p->len ; p++) {
-        if (strcmp(name, p->name) == 0) {
-            (*(commandHandlerPointer)(p->callback))(p->name);
+    /*for (i = 0; i<3;i++) {
+        printf("i:%d,argv:%s\n",i,argv[i]);
+    }    
+    printf("argv0:%s\n",argv[0]);*/
+    for ( ; p->len ; p++) {
+        if (strcmp(filterHuanHang(argv[0]), p->name) == 0) {
+            //printf("argv[1]:%s,argv[2]:%s\n", argv[1], argv[2]);
+            char *val = (*(commandHandlerPointer)(p->callback))(filterHuanHang(argv[1]), filterHuanHang(argv[2]));
+            return val;
         }
-    }*/
+        
+    }
+    printf("command not reconize\n");
+    return NULL;
 }
 /**
  * 读事件回调
@@ -174,9 +204,11 @@ void readCallback(messageBox *box)
 
     printf("readdata:%s\n", string);
     
-    handlerCommand(string);
+    char *response = handlerCommand(string);
 
-    epollEventDdl(EPOLL_CTL_MOD, fd, EPOLLOUT|EPOLLET, readCallback, writeCallback, "send data gei ni");
+    printf("response:%s\n", response);
+    printfHashTable(hash);
+    epollEventDdl(EPOLL_CTL_MOD, fd, EPOLLOUT|EPOLLET, readCallback, writeCallback, response);
 
     free(string);
 }
@@ -187,8 +219,7 @@ void readCallback(messageBox *box)
 void epollEventDdl(int operation, int fd, int type, epollHandle rFunc,epollHandle wFunc, char *data)
 {
     struct epoll_event ev;
-    messageBox *boxdata;
-    boxdata = defMalloc(sizeof(messageBox));
+    messageBox *boxdata = defMalloc(sizeof(messageBox));
     ev.events = type;
     boxdata->socket = fd;
     boxdata->data = data;
