@@ -5,6 +5,15 @@
 #include <time.h>
 
 
+void commandLog(const char *filename, char *string)
+{
+    int fd;
+    fd = open(filename,O_RDWR|O_CREAT|O_APPEND, "0777");
+    write(fd, string, strlen(string));
+    close(fd);
+}
+
+
 void mcLog(const char *filename, char *string)
 {
     int fd;

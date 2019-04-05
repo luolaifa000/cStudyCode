@@ -5,6 +5,7 @@
 
 
 extern hashTable *hash;
+extern int serverPort;
 
 //指令回调
 command_s command_arr[] = {
@@ -28,7 +29,7 @@ int serverInit()
     bzero(&boxData, sizeof(boxData));
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr = inet_addr(SERVER_IP);
-    servaddr.sin_port = htons (SERVER_PORT);
+    servaddr.sin_port = htons (serverPort);
     int listenfd;
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
     if (bind(listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr))) {
@@ -141,6 +142,7 @@ char* handlerCommand(char *name)
     //printf("name:%s\n",name);
     mcLog("demo.log",name);
     command_s *p = command_arr;
+    char *logCommandString = name;
 
     int i = 0;
     char **argv = defMalloc(sizeof(char *) * 3);
@@ -170,6 +172,8 @@ char* handlerCommand(char *name)
         }
         name++;
     }
+
+    commandLog("command.log", logCommandString);
     /*for (i = 0; i<3;i++) {
         printf("i:%d,argv:%s\n",i,argv[i]);
     }    
