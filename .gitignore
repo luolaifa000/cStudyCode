@@ -1,5 +1,6 @@
 .vscode
 *.sql
+*.log
 *.o
 *.gch
 core.*
