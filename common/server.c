@@ -6,6 +6,7 @@
 
 extern hashTable *hash;
 extern int serverPort;
+extern int channel[2];
 
 //指令回调
 command_s command_arr[] = {
@@ -41,6 +42,8 @@ int serverInit()
     epfd = epoll_create(MAX_EPOLL_NUM); 
 
     epollEventDdl(EPOLL_CTL_ADD, listenfd, EPOLLIN|EPOLLET, NULL, NULL, NULL);
+
+    
     return listenfd;
 }
 
@@ -62,6 +65,15 @@ void epollEventLoop(int listenfd)
             socket = box->socket;
             if (socket == listenfd && (events[i].events & EPOLLIN)) {
                 handerAccept(listenfd);
+            } if (socket == channel[0] && (events[i].events & EPOLLIN)) {
+                //printf("sdfsdf\n");
+                char *rec = (char *) malloc(100);
+                memset(rec,0,100);
+                read(socket,rec, 100);
+                mcLog("from_child_heart.log",rec);
+                
+                
+                
             } else if(events[i].events & EPOLLOUT) {
                 (*((epollHandle) box->writeHandle))(box);
             } else if(events[i].events & EPOLLIN) {

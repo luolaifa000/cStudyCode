@@ -20,7 +20,7 @@ typedef char* (*commandHandlerPointer)(char*, char*);
 
 
 
-int epfd,nfds;
+int epfd,nfds,epfdChild;
 
 void epollEventDdl(int operation, int fd, int type, epollHandle rFunc,epollHandle wFunc, char *data);
 
