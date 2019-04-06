@@ -3,32 +3,50 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <error.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 
-void deamonInit()
+int deamonInit()
 {
-    int pid = fork();
-
-    if (pid < 0) {
-        printf("fork\n");
+    int fd;
+    switch (fork()) {
+    case -1:
+        printf("fork() error\n");
         exit(1);
-    }
+        return 1;
 
-    if (pid > 0) {
+    case 0:
+        break;
+
+    default:
         exit(0);
     }
 
     setsid();
-
-    int pid2 = fork();
-
-    if (pid2 < 0) {
-        printf("fork\n");
-        exit(1);
-    }
-
-    if (pid2 > 0) {
-        exit(0);
-    }
-   
     umask(0);
+
+    fd = open("/dev/null", O_RDWR);
+    if (fd == -1) {
+        printf("open() /dev/null error\n");
+        return 1;
+    }
+
+    if (dup2(fd, STDIN_FILENO) == -1) {
+        printf("dup2(STDIN) failed");
+        return 1;
+    }
+
+    if (dup2(fd, STDOUT_FILENO) == -1) {
+        printf("dup2(STDOUT) failed");
+        
+    }
+
+    if (fd > STDERR_FILENO) {
+        if (close(fd) == -1) {
+            printf("close() failed\n");
+            return 1;
+        }
+    }
+
+    return 0;
 }

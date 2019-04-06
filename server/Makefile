@@ -1,4 +1,4 @@
-OBJS = main.o server.o hashTable.o pool.o log.o
+OBJS = main.o server.o hashTable.o pool.o log.o deamon.o
 
 main : $(OBJS)
 	gcc -o main $(OBJS)
@@ -21,6 +21,9 @@ pool.o : ../common/pool.c
 
 log.o : ../log/log.c
 	gcc -c ../log/log.c
+
+deamon.o : ../deamon/deamon.c
+	gcc -c ../deamon/deamon.c
 
 clean : 
 	rm main $(OBJS)

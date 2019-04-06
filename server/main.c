@@ -22,11 +22,17 @@ void heart_handler_fun(int signal_num);
 
 int main(int argc,char *argv[]) 
 {
+
+    
+
+
     if (!argv[1]) {
         printf("must port!\n");
         mcLog("error.log", "must port");
         exit(1);
     }
+
+    deamonInit();
     
     serverPort = atoi(argv[1]);
 
