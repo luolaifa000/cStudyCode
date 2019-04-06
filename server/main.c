@@ -15,6 +15,8 @@ int channel[2];
 
 void childProcess();
 
+void parentProcess();
+
 
 void heart_handler_fun(int signal_num);
 
@@ -28,8 +30,6 @@ int main(int argc,char *argv[])
     
     serverPort = atoi(argv[1]);
 
-    
-
     //parent 0 write 1 read
     //child  0 read  1 write
     int flag = socketpair(AF_UNIX, SOCK_STREAM, 0, channel);
@@ -38,8 +38,6 @@ int main(int argc,char *argv[])
         exit(1);
     }
 
-    
-    
     int p = fork();
     if (p < 0) {
         printf("fork error!\n");
@@ -48,71 +46,65 @@ int main(int argc,char *argv[])
 
     //child process 
     if (p == 0) {
-        close(channel[0]);
+        //处理客户端的请求，响应心跳信息
         childProcess();
+        printf("321");
     } else {    
         //parent process
         //定时向子进程发送心跳消息
-        close(channel[1]);
-        signal_handler signalFun = heart_handler_fun;
-        signal(SIGALRM, signalFun);
-        alarm(5);
-        hash = hashInit(16);
-        int listenfd = serverInit();
-
-        epollEventDdl(EPOLL_CTL_ADD,  channel[0], EPOLLIN|EPOLLET, NULL, NULL, NULL);
-
-        epollEventLoop(listenfd);
-        return 0;
+        parentProcess();
+        printf("123");
+        
     }
     
+    return 0;
+}
+
+void childProcess()
+{
+    close(channel[0]);
+
+    hash = hashInit(16);
+
+    int listenfd = serverInit();
+
+    epfd = epollEventInit();
+
+    //将监听的端口的描述符添加事件树中
+    epollEventDdl(epfd, EPOLL_CTL_ADD, listenfd, EPOLLIN|EPOLLET, NULL, NULL, NULL);
+
+    //将监听的SOCKETPAIRE描述符添加事件树中
+    epollEventDdl(epfd, EPOLL_CTL_ADD,  channel[1], EPOLLIN|EPOLLET, NULL, NULL, NULL);
+
+    epollEventLoop(listenfd, epfd);
+}
+
+
+void parentProcess()
+{
+    close(channel[1]);
+
+    signal_handler signalFun = heart_handler_fun;
+    signal(SIGALRM, signalFun);
+    alarm(5);
     
+    epfdP = epollEventInit();
+
+    epollEventDdl(epfdP, EPOLL_CTL_ADD,  channel[0], EPOLLIN|EPOLLET, NULL, NULL, NULL);
+
+    epollEventLoop(0, epfdP);
 }
 
 
 void heart_handler_fun(int signal_num)
 {
+    printf("dingshiqi\n");
     mcLog("alarm.log","dingshiqi");
     char *heartString = (char *) malloc(100);
     sprintf(heartString, "pid:%d,i am parent!",getpid());
     write(channel[0], heartString, strlen(heartString));
     free(heartString);
     alarm(5);
-}
-
-
-void childProcess()
-{
-    epfdChild = epoll_create(MAX_EPOLL_NUM); 
-    struct epoll_event ev;
-    ev.events = EPOLLIN|EPOLLET;
-    ev.data.fd = channel[1];
-    epoll_ctl(epfdChild, EPOLL_CTL_ADD, channel[1], &ev);
-
-    struct epoll_event events[5]; 
-    int i,n,ret;
-    int socket;
-    for(;;)
-    {
-        nfds = epoll_wait(epfdChild, events, 5, -1);
-        
-        for (i=0; i<nfds; i++)
-        {
-            socket = events[i].data.fd;
-            if(events[i].events & EPOLLIN) {
-                char *rec = (char *) malloc(100);
-                memset(rec,0,100);
-                read(socket,rec, 100);
-                //printf("rec:%s\n", rec);
-                mcLog("child_heart.log",rec);
-                memset(rec,0,100);
-                sprintf(rec, "pid:%d,i am child!",getpid());
-                write(socket, rec, strlen(rec));
-                free(rec);
-            } 
-        }
-    }
-    exit(0);
 }
 
 

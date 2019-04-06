@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
 #include <string.h>
 #include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <time.h>
 
 
@@ -41,8 +44,20 @@ void mcLog(const char *filename, char *string)
     }
     *s++ = '\n';
 
+    umask(0000);
+
     fd = open(filename,O_RDWR|O_CREAT|O_APPEND, "0777");
-    write(fd, start, strlen(start));
+
+    if (fd == -1) {
+        fprintf(stderr, "open() Error opening file: %s,filename:%s,string:%s\n", strerror(errno),filename, start);
+    }
+
+
+    int count = write(fd, start, strlen(start));
+
+    if (count == -1) {
+        fprintf(stderr, "write() Error opening file: %s,filename:%s,string:%s\n", strerror(errno),filename, start);
+    }
     close(fd);
     free(start);
 }

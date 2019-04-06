@@ -20,13 +20,15 @@ typedef char* (*commandHandlerPointer)(char*, char*);
 
 
 
-int epfd,nfds,epfdChild;
+int epfd,nfds,epfdP;
 
-void epollEventDdl(int operation, int fd, int type, epollHandle rFunc,epollHandle wFunc, char *data);
+void epollEventDdl(int epollFd, int operation, int fd, int type, epollHandle rFunc,epollHandle wFunc, char *data);
 
 int serverInit();
 
-void epollEventLoop(int listenfd);
+int epollEventInit();
+
+void epollEventLoop(int listenfd, int epollFd);
 
 void handerAccept(int listenfd);
 

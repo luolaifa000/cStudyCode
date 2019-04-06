@@ -37,43 +37,52 @@ int serverInit()
         printf("bind:%s\n",strerror(errno));
         return 1;
     }
-
     listen(listenfd, MAX_LISTEN_NUM);
-    epfd = epoll_create(MAX_EPOLL_NUM); 
-
-    epollEventDdl(EPOLL_CTL_ADD, listenfd, EPOLLIN|EPOLLET, NULL, NULL, NULL);
-
-    
     return listenfd;
+}
+
+
+int epollEventInit()
+{
+    int fd;
+    fd = epoll_create(MAX_EPOLL_NUM); 
+    return fd;
 }
 
 /**
  * epoll事件阻塞
  * 
 */
-void epollEventLoop(int listenfd)
+void epollEventLoop(int listenfd, int epollFd)
 {
     struct epoll_event events[5]; 
     int i,n,ret;
     int socket;
     for(;;)
     {
-        nfds = epoll_wait(epfd, events, 5, -1);
+        nfds = epoll_wait(epollFd, events, 5, -1);
         for (i=0; i<nfds; i++)
         {
             messageBox *box = (messageBox *)(events[i].data.ptr);
             socket = box->socket;
             if (socket == listenfd && (events[i].events & EPOLLIN)) {
                 handerAccept(listenfd);
-            } if (socket == channel[0] && (events[i].events & EPOLLIN)) {
-                //printf("sdfsdf\n");
+            } if (socket == channel[1] && (events[i].events & EPOLLIN)) {
                 char *rec = (char *) malloc(100);
                 memset(rec,0,100);
                 read(socket,rec, 100);
-                mcLog("from_child_heart.log",rec);
-                
-                
-                
+                //printf("rec:%s\n", rec);
+                mcLog("heart_request.log",rec);
+                memset(rec,0,100);
+                sprintf(rec, "pid:%d,i am child!",getpid());
+                write(socket, rec, strlen(rec));
+                free(rec);
+            } else if (socket == channel[0] && (events[i].events & EPOLLIN)) {
+                char *rec1 = (char *) malloc(100);
+                memset(rec1,0,100);
+                read(socket,rec1, 100);
+                mcLog("heart_response.log",rec1);
+                free(rec1);
             } else if(events[i].events & EPOLLOUT) {
                 (*((epollHandle) box->writeHandle))(box);
             } else if(events[i].events & EPOLLIN) {
@@ -231,7 +240,7 @@ void readCallback(messageBox *box)
 
     printf("response:%p\n", response);
     printfHashTable(hash);
-    epollEventDdl(EPOLL_CTL_MOD, fd, EPOLLOUT|EPOLLET, readCallback, writeCallback, response);
+    epollEventDdl(epfd, EPOLL_CTL_MOD, fd, EPOLLOUT|EPOLLET, readCallback, writeCallback, response);
 
     defFree(string);
 }
@@ -239,7 +248,7 @@ void readCallback(messageBox *box)
 /**
  * 注册修改删除事件
  **/
-void epollEventDdl(int operation, int fd, int type, epollHandle rFunc,epollHandle wFunc, char *data)
+void epollEventDdl(int epollFd, int operation, int fd, int type, epollHandle rFunc,epollHandle wFunc, char *data)
 {
     struct epoll_event ev;
     messageBox *boxdata = defMalloc(sizeof(messageBox));
@@ -249,7 +258,7 @@ void epollEventDdl(int operation, int fd, int type, epollHandle rFunc,epollHandl
     boxdata->readHandle = rFunc;
     boxdata->writeHandle = wFunc;
     ev.data.ptr = boxdata;
-    epoll_ctl(epfd, operation, fd, &ev);
+    epoll_ctl(epollFd, operation, fd, &ev);
 }
 
 /**
@@ -264,7 +273,7 @@ void writeCallback(messageBox *box)
         perror("write error\n");
     }
     if (nwrite > 0) {
-        epollEventDdl(EPOLL_CTL_MOD, fd, EPOLLIN|EPOLLET, readCallback, writeCallback, NULL);
+        epollEventDdl(epfd, EPOLL_CTL_MOD, fd, EPOLLIN|EPOLLET, readCallback, writeCallback, NULL);
     }
 }
 
@@ -285,7 +294,7 @@ void handerAccept(int listenfd)
     
     printf("accept a new client: %s:%d\n",inet_ntoa(clientAddr.sin_addr),clientAddr.sin_port);
     
-    epollEventDdl(EPOLL_CTL_ADD, clientFd, EPOLLIN|EPOLLET, readCallback, writeCallback, NULL);
+    epollEventDdl(epfd, EPOLL_CTL_ADD, clientFd, EPOLLIN|EPOLLET, readCallback, writeCallback, NULL);
 }
 
 
