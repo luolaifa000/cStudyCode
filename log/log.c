@@ -43,9 +43,7 @@ void mcLog(const char *filename, char *string)
         *s++ = *string++;
     }
     *s++ = '\n';
-
-    umask(0000);
-
+    
     fd = open(filename,O_RDWR|O_CREAT|O_APPEND, "0777");
 
     if (fd == -1) {
